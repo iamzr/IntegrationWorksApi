@@ -1,0 +1,20 @@
+package com.example.demo;
+
+@Configuration
+public class MyConfigClass {
+    @Bean
+    public Jaxb2Marshaller jaxb2Marshaller() {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+        marshaller.setClassesToBeBound(PurchaseOrder);
+        // "alternative/additiona - ly":
+          // marshaller.setContextPath(<jaxb.context-file>)
+          // marshaller.setPackagesToScan({"com.foo", "com.baz", "com.bar"});
+
+        marshaller.setMarshallerProperties(new HashMap<String, Object>() {{
+          put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, true);
+          // set more properties here...
+        }});
+
+        return marshaller;
+    }
+}
