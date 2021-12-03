@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.oxm.Marshaller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,37 +63,39 @@ public class Controller {
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Foo Not Found", e);
 		} catch (IOException e) {
 			// return ResponseEntity.status(400);
+			// System.out.print(e);
+		// throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Invalid XML"));
 		}
 
 
 		 JAXBContext jaxbContext;
-			try
-			{
-    			jaxbContext = JAXBContext.newInstance(PurchaseOrder.class);              
+		try
+		{
+    		jaxbContext = JAXBContext.newInstance(PurchaseOrder.class);              
  
-    			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
  
-    			PurchaseOrder employee = (PurchaseOrder) jaxbUnmarshaller.unmarshal(new StringReader(order));
+    		PurchaseOrder employee = (PurchaseOrder) jaxbUnmarshaller.unmarshal(new StringReader(order));
 				
-				PurchaseOrderLines lines = employee.getPurchaseOrderLines();
-				List<PurchaseOrderLine> lineList = lines.getPurchaseOrderLine();
+			PurchaseOrderLines lines = employee.getPurchaseOrderLines();
+			List<PurchaseOrderLine> lineList = lines.getPurchaseOrderLine();
 
-				for (int i=0; i< lineList.size(); i++) {
-					byte cost = lineList.get(i).getCost();
-					byte newCost = (byte)(cost * 1.23);
-					lineList.get(i).setCost(newCost);
-				}
+			for (int i=0; i< lineList.size(); i++) {
+				byte cost = lineList.get(i).getCost();
+				byte newCost = (byte)(cost * 1.23);
+				lineList.get(i).setCost(newCost);
+			}
 
 			
 
-				return ResponseEntity.status(HttpStatus.CREATED).body(employee);
-    			// System.out.println(employee);
-			}
-			catch (JAXBException e) 
-			{
-    			throw new ResponseStatusException(
-           HttpStatus.NOT_FOUND, "Foo Not Found", e);
-			} 
+			return ResponseEntity.status(HttpStatus.CREATED).body(employee);
+    		// System.out.println(employee);
+		}
+		catch (JAXBException e) 
+		{
+			System.out.print(e);
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Invalid XML"));
+		} 
 
 	}
 
